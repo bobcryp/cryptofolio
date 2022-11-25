@@ -65,8 +65,6 @@ else:
 
     st.header('Info about one token')
     tk=st.selectbox('Token',set(list(df_total['Coin'])))
-    i=list(set(list(df_total['Coin']))).index(tk)
-    st.metric(df_total['Coin'].iloc[i], str(round(df_total['Price'].iloc[i]))+' $', delta=str(round((df_total['Price'].iloc[i]/df_total['Cost'].iloc[i]-1)*100,1))+' %', delta_color="normal", help=None)
 
     df_tk=st.session_state['data'].loc[st.session_state['data']['Pair1']==tk]
     df_tk=df_tk.sort_values(by=['Date'])
