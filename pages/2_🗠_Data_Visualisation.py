@@ -27,7 +27,8 @@ else:
     total_invest=np.sum(st.session_state['data']['Balance_Dollar'])
 
     df_total=pd.DataFrame(columns=['Coin','Amount','Cost','Price'])
-
+    df_total=df_total.sort_values(by=['Price'])
+    
     for pp in set(list(st.session_state['data']['Pair1'])):
         tmp_c=[pp,0]
         df=st.session_state['data'].query("Pair1 == @pp")
