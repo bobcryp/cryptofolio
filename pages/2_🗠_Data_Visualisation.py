@@ -53,7 +53,7 @@ else:
     col = st.columns(3)
     for i in range(len(df_total)):
         tmp=col[i%3]
-        tmp.metric(df_total['Coin'].iloc[i], str(round(df_total['Price'].iloc[i]))+' $', delta=str(round((df_total['Price'].iloc[i]/df_total['Cost'].iloc[i]-1)*100,4))+' %', delta_color="normal", help=None)
+        tmp.metric(df_total['Coin'].iloc[i], str(round(df_total['Price'].iloc[i]))+' $', delta=str(round((df_total['Price'].iloc[i]/df_total['Cost'].iloc[i]-1)*100,1))+' %', delta_color="normal", help=None)
 
     col = st.columns(2)
     fig_invest = px.pie(df_total, values='Cost', names='Coin')
