@@ -46,7 +46,7 @@ else:
         df_total=pd.concat([df_total,tmp_c])
 
     st.header('Total')
-    df_total=df_total.sort_values(by=['Price'])
+    df_total=df_total.sort_values(by=['Price'],ascending=False)
     st.metric('All crypto', str(round(np.sum(df_total['Price'])))+' $', delta=str(round((np.sum(df_total['Price'])/np.sum(df_total['Cost'])-1)*100,1))+' %', delta_color="normal", help=None)
 
     st.header('Token')
@@ -64,8 +64,8 @@ else:
     col[1].plotly_chart(fig_value)
 
     st.header('Info about one token')
-    tk=st.selectbox('Token',set(list(st.session_state['data']['Pair1'])))
-    i=list(set(list(st.session_state['data']['Pair1']))).index(tk)
+    tk=st.selectbox('Token',set(list(df_total['Coin'])))
+    i=list(set(list(df_total['Coin']))).index(tk)
     st.metric(df_total['Coin'].iloc[i], str(round(df_total['Price'].iloc[i]))+' $', delta=str(round((df_total['Price'].iloc[i]/df_total['Cost'].iloc[i]-1)*100,1))+' %', delta_color="normal", help=None)
 
     df_tk=st.session_state['data'].loc[st.session_state['data']['Pair1']==tk]
