@@ -27,7 +27,6 @@ else:
     total_invest=np.sum(st.session_state['data']['Balance_Dollar'])
 
     df_total=pd.DataFrame(columns=['Coin','Amount','Cost','Price'])
-    df_total=df_total.sort_values(by=['Price'])
     
     for pp in set(list(st.session_state['data']['Pair1'])):
         tmp_c=[pp,0]
@@ -47,7 +46,7 @@ else:
         df_total=pd.concat([df_total,tmp_c])
 
     st.header('Total')
-
+    df_total=df_total.sort_values(by=['Price'])
     st.metric('All crypto', str(round(np.sum(df_total['Price'])))+' $', delta=str(round((np.sum(df_total['Price'])/np.sum(df_total['Cost'])-1)*100,1))+' %', delta_color="normal", help=None)
 
     st.header('Token')
