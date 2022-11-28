@@ -6,6 +6,7 @@ import datetime
 import pandas as pd
 import plotly.express as px
 from pathlib import Path
+import os
 
 st.set_page_config(
     page_title="Token Analysis",
@@ -45,6 +46,7 @@ else:
         }
 
         tmp_c=pd.DataFrame(dict)
+        tmp_c=tmp_c.round(4)
         df_total=pd.concat([df_total,tmp_c])
     
 
@@ -53,24 +55,22 @@ else:
     id_tk=df_total['Coin']==tk
 
     if float(df_total['Cost'].loc[id_tk])<=0:
-        tmp_G='G: '+str(-float(df_total['Cost'].loc[id_tk]))+' $'
+        tmp_G='G: '+str(round(-float(df_total['Cost'].loc[id_tk]),1))+' $'
     else:
-        tmp_G=str((float(df_total['Price'].loc[id_tk])/float(df_total['Cost'].loc[id_tk])-1)*100)+' %'
+        tmp_G=str(round((float(df_total['Price'].loc[id_tk])/float(df_total['Cost'].loc[id_tk])-1)*100,2))+' %'
 
-    dict={'Quantity':[str(float(df_total['Amount'].loc[id_tk]))+' '+tk],
-          'Actual Value':[str(float(df_total['Price'].loc[id_tk]))+' $'],
-          'Average Token Buying Price':[str(float(df_total['Cost'].loc[id_tk])/float(df_total['Amount'].loc[id_tk]))+' $'],
-          'Actual Token Value':[str(float(df_total['Price'].loc[id_tk])/float(df_total['Amount'].loc[id_tk]))+' $'],
+    dict={'Quantity':[str(round(float(df_total['Amount'].loc[id_tk]),2))+' '+tk],
+          'Actual Value':[str(round(float(df_total['Price'].loc[id_tk]),2))+' $'],
+          'Average Token Buying Price':[str(round(float(df_total['Cost'].loc[id_tk])/float(df_total['Amount'].loc[id_tk]),4))+' $'],
+          'Actual Token Value':[str(round(float(df_total['Price'].loc[id_tk])/float(df_total['Amount'].loc[id_tk]),4))+' $'],
           'Gain/loss': [tmp_G]
     }
     
     df_tmp=pd.DataFrame(dict)
     st.dataframe(df_tmp)
 
-    period=st.radio('Period :',['Year','Month','Week','Day','Hour'],horizontal=True)
+    period=st.radio('Period :',['Year','Month','Week','Day','Hour'],horizontal=True,index=3)
 
-        
-    
     if period=='Year':
         delta_t=365.24*24*3600
     elif period=='Month':
@@ -93,6 +93,9 @@ else:
     
     cs=np.cumsum(df_tk['Quantities'])
     df_tk.insert(0,'Amont',cs.to_list())
+
+    if tk.lower()+'.png' in os.listdir('icon'):
+        st.image('icon/'+tk.lower()+'.png',width=50)
 
     st.metric(tk, str(round(res_now.value,4))+' $', delta=str(round(res_now.value/res_delta.value-1,4)*100)+' %', delta_color="normal", help=None)
 
