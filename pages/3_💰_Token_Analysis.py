@@ -7,6 +7,7 @@ import pandas as pd
 import plotly.express as px
 from pathlib import Path
 import os
+import tarfile
 
 st.set_page_config(
     page_title="Token Analysis",
@@ -29,25 +30,26 @@ if len(st.session_state['data'])==0:
 else:
     df_total=pd.DataFrame(columns=['Coin','Amount','Cost','Price'])
     
-    for pp in set(list(st.session_state['data']['Pair1'])):
-        tmp_c=[pp,0]
-        df=st.session_state['data'].query("Pair1 == @pp")
-        nb_coin=np.sum(df['Quantities'])
-        nb_price=np.sum(df['Balance_Dollar'])
-        
-        timestamp=datetime.datetime.today().timestamp()
-        res=retriever.get_closest_price(pp, 'BUSD', int(timestamp))
-        nb_value=nb_coin*res.value
-        
-        dict={'Coin':[pp],
-            'Amount':[nb_coin],
-            'Cost':[nb_price],
-            'Price':[nb_value]
-        }
+    with st.spinner('Wait for it ...'):
+        for pp in set(list(st.session_state['data']['Pair1'])):
+            tmp_c=[pp,0]
+            df=st.session_state['data'].query("Pair1 == @pp")
+            nb_coin=np.sum(df['Quantities'])
+            nb_price=np.sum(df['Balance_Dollar'])
+            
+            timestamp=datetime.datetime.today().timestamp()
+            res=retriever.get_closest_price(pp, 'BUSD', int(timestamp))
+            nb_value=nb_coin*res.value
+            
+            dict={'Coin':[pp],
+                'Amount':[nb_coin],
+                'Cost':[nb_price],
+                'Price':[nb_value]
+            }
 
-        tmp_c=pd.DataFrame(dict)
-        tmp_c=tmp_c.round(4)
-        df_total=pd.concat([df_total,tmp_c])
+            tmp_c=pd.DataFrame(dict)
+            tmp_c=tmp_c.round(4)
+            df_total=pd.concat([df_total,tmp_c])
     
 
     list_token=sorted(list(set(list(df_total['Coin']))))
@@ -94,8 +96,17 @@ else:
     cs=np.cumsum(df_tk['Quantities'])
     df_tk.insert(0,'Amont',cs.to_list())
 
+    if 'icon' not in os.listdir('.'):
+        # open file
+        file = tarfile.open('icon.tar.xz')
+        # extracting file
+        file.extractall('.')
+        file.close()
+
     if tk.lower()+'.png' in os.listdir('icon'):
         st.image('icon/'+tk.lower()+'.png',width=50)
+    
+    #st.image(response,width=50)
 
     st.metric(tk, str(round(res_now.value,4))+' $', delta=str(round(res_now.value/res_delta.value-1,4)*100)+' %', delta_color="normal", help=None)
 
