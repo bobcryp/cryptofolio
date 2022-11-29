@@ -24,5 +24,5 @@ with st.spinner():
         st.success('Data downloaded')
 
 with st.sidebar:
-    st.session_state['data'].to_csv('tmp.csv',sep=';')
+    st.session_state['data'].to_csv('tmp.csv',sep=';',index=False)
     st.download_button('Download .criptofolio',data=Path('tmp.csv').read_text(),file_name='mydata.criptofolio',key='uke-1')
