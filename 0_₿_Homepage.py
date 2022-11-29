@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
+import lib_cryptofolio.load_history as fc
 
 st.set_page_config(
     page_title="CryptoFolio",
@@ -22,6 +23,19 @@ with st.spinner():
     if uploaded_file is not None:
         st.session_state['data'] = pd.read_csv(uploaded_file,sep=';')
         st.success('Data downloaded')
+
+st.header('Update data from exchange')
+ex_op=st.selectbox('Exchange',['Binance','Coinbase Pro'])
+uploaded_Ex = st.file_uploader("Choose csv from "+ex_op,type='csv')
+with st.spinner():    
+    if uploaded_Ex is not None:
+        if ex_op=='Binance':
+            data_new=fc.load_binance(uploaded_Ex)
+            st.session_state['data']=pd.concat([st.session_state['data'],data_new])
+        elif ex_op=='Coinbase Pro':
+            data_new=fc.load_coinbasepro(uploaded_Ex)
+            st.session_state['data']=pd.concat([st.session_state['data'],data_new])
+
 
 with st.sidebar:
     st.session_state['data'].to_csv('tmp.csv',sep=';',index=False)
