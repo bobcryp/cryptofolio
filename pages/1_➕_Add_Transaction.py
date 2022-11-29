@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 with st.sidebar:
-    st.session_state['data'].to_csv('tmp.csv',sep=';')
+    st.session_state['data'].to_csv('tmp.csv',sep=';',index=False)
     st.download_button('Download .criptofolio',data=Path('tmp.csv').read_text(),file_name='mydata.criptofolio',key='uke-1')
 
 st.title('Add a Transaction')
