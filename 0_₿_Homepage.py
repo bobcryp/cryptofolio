@@ -9,6 +9,15 @@ st.set_page_config(
 )
 
 st.title('Welcome to CryptoFolio')
+
+import requests
+
+def get_ip():
+    response = requests.get('https://api64.ipify.org?format=json').json()
+    return response["ip"]
+
+st.success(get_ip())
+
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
 st.write('This web app is meant to follow the state of your crypto currency investment.')
