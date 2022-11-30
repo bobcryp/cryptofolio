@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-import lib_cryptofolio.load_history as fc
 import lib_cryptofolio.get_price as gp
 
 st.set_page_config(
