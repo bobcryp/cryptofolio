@@ -50,7 +50,7 @@ def get_price(sym,date=None,value='usd',data=None):
         if sym.upper() in hard_find:
             if value.lower() not in ['btc','eth','usd','eur','busd','usdt','usdc']:
                 return -1
-            if value in ['busd','usdt','usdc']:
+            if value.lower() in ['busd','usdt','usdc']:
                 value='usd'
             if date is None:
                 res=data[hard_find[sym]][value.lower()]

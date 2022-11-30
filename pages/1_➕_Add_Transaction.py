@@ -40,9 +40,6 @@ t_time=st.time_input('Transaction time')
 
 full_time=datetime.datetime.combine(t_date, t_time)
 
-timestamp = full_time.timestamp()
-
-# will return the first price price found close to the timestamp
 res=gp.get_price(pair1.upper(), value=pair2,data=st.session_state['data_price'])
 
 if res == -1 :
@@ -89,7 +86,7 @@ elif pair1!='' and pair2!='':
             a=['Buy','Sell']
             a.remove(tr_type)
             tmp_tr=a[0]
-            change=gp.get_price(pair2,data=st.session_state['data_price'])
+            change2=gp.get_price(pair2,data=st.session_state['data_price'])
             tQ=-1*coeff*Q*change/change2
             dict= {'Date':[full_time],
                 'Type':[tmp_tr],
