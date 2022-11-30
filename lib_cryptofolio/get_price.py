@@ -43,7 +43,9 @@ def get_price(sym,date=None,value='usd',data=None):
            'BAT':'basic-attention-token',
            'ENJ':'enjincoin',
            'SUCHI':'sushi',
-           'ERN':'ethernity-chain'
+           'ERN':'ethernity-chain',
+           'ONE':'harmony',
+           'XTZ':'tezos'
           }
 
     if data is not None:
@@ -123,7 +125,9 @@ def load_price():
            'BAT':'basic-attention-token',
            'ENJ':'enjincoin',
            'SUCHI':'sushi',
-           'ERN':'ethernity-chain'
+           'ERN':'ethernity-chain',
+           'ONE':'harmony',
+           'XTZ':'tezos'
           }
     id_cg=[]
     for i in list(hard_find):
