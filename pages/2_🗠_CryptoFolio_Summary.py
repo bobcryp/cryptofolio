@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from CryptoPrice import get_default_retriever
+import lib_cryptofolio.get_price as gp
 import datetime
 import pandas as pd
 import plotly.express as px
@@ -14,11 +14,13 @@ st.set_page_config(
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
 
+if 'data_price' not in st.session_state:
+    st.session_state['data_price'] = gp.load_price()
+
 with st.sidebar:
     st.session_state['data'].to_csv('tmp.csv',sep=';',index=False)
     st.download_button('Download .criptofolio',data=Path('tmp.csv').read_text(),file_name='mydata.criptofolio',key='uke-1')
 
-retriever = get_default_retriever()
 st.title('CrypoFolio visualisation !')
 
 if len(st.session_state['data'])==0:
@@ -33,9 +35,8 @@ else:
         df=st.session_state['data'].query("Pair1 == @pp")
         nb_coin=np.sum(df['Quantities'])
         nb_price=np.sum(df['Balance_Dollar'])
-        timestamp=datetime.datetime.today().timestamp()
-        res=retriever.get_closest_price(pp, 'BUSD', int(timestamp))
-        nb_value=nb_coin*res.value
+        res=gp.get_price(pp, value='usd',data=st.session_state['data_price'])
+        nb_value=nb_coin*res
         
         dict={'Coin':[pp],
             'Amount':[nb_coin],

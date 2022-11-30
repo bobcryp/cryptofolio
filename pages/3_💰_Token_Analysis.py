@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as com
 import numpy as np
-from CryptoPrice import get_default_retriever
+import lib_cryptofolio.get_price as gp
 import datetime
 import pandas as pd
 import plotly.express as px
@@ -18,11 +18,13 @@ st.set_page_config(
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
 
+if 'data_price' not in st.session_state:
+    st.session_state['data_price'] = gp.load_price()
+
 with st.sidebar:
     st.session_state['data'].to_csv('tmp.csv',sep=';',index=False)
     st.download_button('Download .criptofolio',data=Path('tmp.csv').read_text(),file_name='mydata.criptofolio',key='uke-1')
 
-retriever = get_default_retriever()
 st.title('Token analysis !')
 
 if len(st.session_state['data'])==0:
@@ -38,8 +40,8 @@ else:
             nb_price=np.sum(df['Balance_Dollar'])
             
             timestamp=datetime.datetime.today().timestamp()
-            res=retriever.get_closest_price(pp, 'BUSD', int(timestamp))
-            nb_value=nb_coin*res.value
+            res=gp.get_price(pp, value='usd',data=st.session_state['data_price'])
+            nb_value=nb_coin*res
             
             dict={'Coin':[pp],
                 'Amount':[nb_coin],
@@ -67,27 +69,11 @@ else:
           'Actual Token Value':[str(round(float(df_total['Price'].loc[id_tk])/float(df_total['Amount'].loc[id_tk]),4))+' $'],
           'Gain/loss': [tmp_G]
     }
-    
+
     df_tmp=pd.DataFrame(dict)
     st.dataframe(df_tmp)
 
-    period=st.radio('Period :',['Year','Month','Week','Day','Hour'],horizontal=True,index=3)
-
-    if period=='Year':
-        delta_t=365.24*24*3600
-    elif period=='Month':
-        delta_t=30.44*24*3600
-    elif period=='Week':
-        delta_t=7*24*3600
-    elif period=='Day':
-        delta_t=24*3600
-    elif period=='Hour':
-        delta_t=3600
-        
-    
-    timestamp=datetime.datetime.today().timestamp()
-    res_now=retriever.get_closest_price(tk, 'BUSD', int(timestamp))
-    res_delta=retriever.get_closest_price(tk, 'BUSD', int(timestamp-delta_t))
+    res_now=gp.get_price(tk, value='usd',data=st.session_state['data_price'])
 
     df_tk=st.session_state['data'].loc[st.session_state['data']['Pair1']==tk]
     
@@ -95,6 +81,7 @@ else:
     
     cs=np.cumsum(df_tk['Quantities'])
     df_tk.insert(0,'Amont',cs.to_list())
+
 
     if 'icon' not in os.listdir('.'):
         # open file
@@ -106,10 +93,6 @@ else:
     if tk.lower()+'.png' in os.listdir('icon'):
         st.image('icon/'+tk.lower()+'.png',width=50)
     
-    #st.image(response,width=50)
-
-    st.metric(tk, str(round(res_now.value,4))+' $', delta=str(round(res_now.value/res_delta.value-1,4)*100)+' %', delta_color="normal", help=None)
-
     if len(cs)!=1:
         fig_amount = px.line(df_tk, x="Date", y="Amont", title='Evolution of the amont of '+tk)
         st.plotly_chart(fig_amount)

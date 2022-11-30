@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 import lib_cryptofolio.load_history as fc
+import lib_cryptofolio.get_price as gp
 
 st.set_page_config(
     page_title="CryptoFolio",
@@ -10,13 +11,8 @@ st.set_page_config(
 
 st.title('Welcome to CryptoFolio')
 
-import requests
-
-def get_ip():
-    response = requests.get('https://api64.ipify.org?format=json').json()
-    return response["ip"]
-
-st.success(get_ip())
+if 'data_price' not in st.session_state:
+    st.session_state['data_price'] = gp.load_price()
 
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
@@ -33,17 +29,17 @@ with st.spinner():
         st.session_state['data'] = pd.read_csv(uploaded_file,sep=';')
         st.success('Data downloaded')
 
-st.header('Update data from exchange')
-ex_op=st.selectbox('Exchange',['Binance','Coinbase Pro'])
-uploaded_Ex = st.file_uploader("Choose csv from "+ex_op,type='csv')
-with st.spinner():    
-    if uploaded_Ex is not None:
-        if ex_op=='Binance':
-            data_new=fc.load_binance(uploaded_Ex)
-            st.session_state['data']=pd.concat([st.session_state['data'],data_new])
-        elif ex_op=='Coinbase Pro':
-            data_new=fc.load_coinbasepro(uploaded_Ex)
-            st.session_state['data']=pd.concat([st.session_state['data'],data_new])
+#st.header('Update data from exchange')
+#ex_op=st.selectbox('Exchange',['Binance','Coinbase Pro'])
+#uploaded_Ex = st.file_uploader("Choose csv from "+ex_op,type='csv')
+#with st.spinner():    
+#    if uploaded_Ex is not None:
+#        if ex_op=='Binance':
+#            data_new=fc.load_binance(uploaded_Ex)
+#            st.session_state['data']=pd.concat([st.session_state['data'],data_new])
+#        elif ex_op=='Coinbase Pro':
+#            data_new=fc.load_coinbasepro(uploaded_Ex)
+#            st.session_state['data']=pd.concat([st.session_state['data'],data_new])
 
 
 with st.sidebar:

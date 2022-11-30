@@ -1,9 +1,11 @@
 import streamlit as st
-from CryptoPrice import get_default_retriever
+import lib_cryptofolio.get_price as gp
 import datetime
 import pandas as pd
 from pathlib import Path
 
+if 'data_price' not in st.session_state:
+    st.session_state['data_price'] = gp.load_price()
 
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
@@ -38,23 +40,21 @@ t_time=st.time_input('Transaction time')
 
 full_time=datetime.datetime.combine(t_date, t_time)
 
-retriever = get_default_retriever()
-
-timestamp = int(full_time.timestamp())
+timestamp = full_time.timestamp()
 
 # will return the first price price found close to the timestamp
-res=retriever.get_closest_price(pair1.upper(), pair2.upper(), timestamp)
+res=gp.get_price(pair1.upper(), value=pair2,data=st.session_state['data_price'])
 
-if res is None :
+if res == -1 :
     st.warning('Transaction Pair not available !')
 elif pair1!='' and pair2!='':
     st.header('Adjust transaction price')
-    TP=st.number_input('True Price', value=res.value,format='%f')
+    TP=st.number_input('True Price', value=res,format='%f')
     Q=st.number_input('Quantities',format='%f')
     
     if pair2.upper() in ['EUR','USDC','USDT','BUSD']:
         if pair2.upper()=='EUR':
-            change=retriever.get_closest_price(pair2.upper(),'BUSD', timestamp).value
+            change=gp.get_price('EUR',data=st.session_state['data_price'])
         else:
             change=1
         
@@ -75,7 +75,7 @@ elif pair1!='' and pair2!='':
         if st.button('Add Transaction'):
             st.success('You '+tr_type.lower()+' '+str(Q)+' '+pair1.upper()+' for '+str(Q*TP)+' '+pair2.upper()+' !')
                 
-            change=retriever.get_closest_price(pair1.upper(),'BUSD', timestamp).value 
+            change=gp.get_price(pair1,data=st.session_state['data_price'])
             dict= {'Date':[full_time],
                 'Type':[tr_type],
                 'Pair1':[pair1.upper()],
@@ -89,7 +89,7 @@ elif pair1!='' and pair2!='':
             a=['Buy','Sell']
             a.remove(tr_type)
             tmp_tr=a[0]
-            change2=retriever.get_closest_price(pair2.upper(),'BUSD', timestamp).value 
+            change=gp.get_price(pair2,data=st.session_state['data_price'])
             tQ=-1*coeff*Q*change/change2
             dict= {'Date':[full_time],
                 'Type':[tmp_tr],
