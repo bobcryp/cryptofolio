@@ -8,7 +8,8 @@ from pathlib import Path
 
 st.set_page_config(
     page_title="CryptoFolio Summary",
-    page_icon="🗠",
+    page_icon="📈",
+    layout="wide"
 )
 
 if 'data' not in st.session_state:
@@ -56,9 +57,9 @@ else:
     st.metric('All crypto', str(round(np.sum(df_total['Price'])))+' $', delta=delta_all, delta_color="normal", help=None)
 
     st.header('Token')
-    col = st.columns(3)
+    col = st.columns(5)
     for i in range(len(df_total)):
-        tmp=col[i%3]
+        tmp=col[i%5]
         if np.sum(df_total['Cost'].iloc[i])<=0:
             delta_tmp_all='G: '+str(-1*round(np.sum(df_total['Cost'].iloc[i]),1))+' $'
         else:
