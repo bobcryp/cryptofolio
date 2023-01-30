@@ -4,6 +4,7 @@ import datetime
 def get_price(sym,date=None,value='usd',data=None):
     cg = CoinGeckoAPI()
     hard_find={'BIT':'bitdao',
+           'CHSB':'swissborg',
            'DGB':'digibyte',
            'EUR':'tether-eurt',
            'SOL':'solana',
@@ -87,6 +88,7 @@ def get_price(sym,date=None,value='usd',data=None):
 def load_price():
     cg = CoinGeckoAPI()
     hard_find={'BIT':'bitdao',
+           'CHSB':'swissborg',
            'DGB':'digibyte',
            'EUR':'tether-eurt',
            'SOL':'solana',
