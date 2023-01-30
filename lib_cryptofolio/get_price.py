@@ -87,6 +87,7 @@ def get_price(sym,date=None,value='usd',data=None):
 def load_price():
     cg = CoinGeckoAPI()
     hard_find={'BIT':'bitdao',
+           'DGB':'digibyte',
            'EUR':'tether-eurt',
            'SOL':'solana',
            'ADA':'cardano',
