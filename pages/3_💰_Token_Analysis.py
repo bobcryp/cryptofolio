@@ -100,13 +100,13 @@ else:
     c1,c2,c3 = st.columns(3)
 
     with c1 :    
-        min_price=st.number_input("Minimum selling price",min_value=0.0,value=np.float(df_tmp['Average Token Buying Price'].astype('string')[0].split(' ')[0])*2.1,format='%f')
+        min_price=st.number_input("Minimum selling price",min_value=0.0,value=float(df_tmp['Average Token Buying Price'].astype('string')[0].split(' ')[0])*2.1,format='%f')
 
     with c2:
         d_pc=st.number_input("Delta %",min_value=0.0,value=5.0)
 
     with c3:
-        amt=st.number_input("Quantity to sell",min_value=0.0,value=np.float(df_tmp.Quantity.astype('string')[0].split(' ')[0])/2)
+        amt=st.number_input("Quantity to sell",min_value=0.0,value=float(df_tmp.Quantity.astype('string')[0].split(' ')[0])/2)
 
     c1b,c2b = st.columns(2)
 
