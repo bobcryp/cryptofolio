@@ -70,6 +70,19 @@ else:
           'Gain/loss': [tmp_G]
     }
 
+    st.header('Summary for '+tk)
+
+    if 'icon' not in os.listdir('.'):
+        # open file
+        file = tarfile.open('icon.tar.xz')
+        # extracting file
+        file.extractall('.')
+        file.close()
+
+    if tk.lower()+'.png' in os.listdir('icon'):
+        st.image('icon/'+tk.lower()+'.png',width=50)
+    
+
     df_tmp=pd.DataFrame(dict)
     st.dataframe(df_tmp)
 
@@ -83,20 +96,33 @@ else:
     df_tk.insert(0,'Amont',cs.to_list())
 
 
-    if 'icon' not in os.listdir('.'):
-        # open file
-        file = tarfile.open('icon.tar.xz')
-        # extracting file
-        file.extractall('.')
-        file.close()
+    st.header('Trailing stop')
+    c1,c2,c3 = st.columns(3)
 
-    if tk.lower()+'.png' in os.listdir('icon'):
-        st.image('icon/'+tk.lower()+'.png',width=50)
-    
+    with c1 :    
+        min_price=st.number_input("Minimum selling price",min_value=0.0,value=np.float(df_tmp['Average Token Buying Price'].astype('string')[0].split(' ')[0])*2.1,format='%f')
+
+    with c2:
+        d_pc=st.number_input("Delta %",min_value=0.0,value=5.0)
+
+    with c3:
+        amt=st.number_input("Quantity to sell",min_value=0.0,value=np.float(df_tmp.Quantity.astype('string')[0].split(' ')[0])/2)
+
+    c1b,c2b = st.columns(2)
+
+    with c1b:
+        value = min_price/(1-d_pc/100)
+        st.metric('Trigger', value)
+
+    with c2b:
+        st.metric('Minimum income', amt*min_price)
+
     if len(cs)!=1:
+        st.header('Quantity evolution')
         fig_amount = px.line(df_tk, x="Date", y="Amont", title='Evolution of the amont of '+tk)
         st.plotly_chart(fig_amount)
 
+    st.header('Trading view chart')
     TW_html="""<!-- TradingView Widget BEGIN --><div class="tradingview-widget-container"><div id="tradingview_77c5b"></div><div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/"""+tk+"""BUSD/?exchange=BINANCE" rel="noopener" target="_blank"><span class="blue-text">"""+tk+"""BUSD Chart</span></a> by TradingView</div><script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script><script type="text/javascript">new TradingView.widget({"width": 1500,"height": 700,"symbol": "BINANCE:"""+tk+"""BUSD","interval": "D","timezone": "Etc/UTC","theme": "light","style": "1","locale": "en","toolbar_bg": "#f1f3f6","enable_publishing": false,"allow_symbol_change": true,"show_popup_button": true,"hide_side_toolbar": false,"container_id": "tradingview_77c5b"});</script></div><!-- TradingView Widget END -->"""    
 
     com.html(TW_html,width=1500,height=700)
