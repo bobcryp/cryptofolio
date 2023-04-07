@@ -68,8 +68,8 @@ else:
         tmp.metric(df_total['Coin'].iloc[i], str(round(df_total['Price'].iloc[i]))+' $', delta=delta_tmp_all, delta_color="normal", help=None)
 
     col = st.columns(2)
-    fig_invest = px.pie(df_total, values='Cost', names='Coin')
-    fig_value = px.pie(df_total, values='Price', names='Coin')
+    fig_invest = px.pie(df_total, values='Cost', names='Coin', color='category')
+    fig_value = px.pie(df_total, values='Price', names='Coin', color='category')
     col[0].subheader('Buying price')
     col[0].plotly_chart(fig_invest)
     col[1].subheader('Actual value')
