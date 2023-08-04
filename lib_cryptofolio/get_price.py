@@ -3,7 +3,8 @@ import datetime
 
 def get_price(sym,date=None,value='usd',data=None):
     cg = CoinGeckoAPI()
-    hard_find={'ORN':'orion-protocol',
+    hard_find={'CRV':'curve',
+           'ORN':'orion-protocol',
            'UNI':'uniswap',
            'FLUX':'zelcash',
            'BIT':'bitdao',
@@ -90,7 +91,8 @@ def get_price(sym,date=None,value='usd',data=None):
 
 def load_price():
     cg = CoinGeckoAPI()
-    hard_find={'ORN':'orion-protocol',
+    hard_find={'CRV':'curve',
+           'ORN':'orion-protocol',
            'UNI':'uniswap',
            'FLUX':'zelcash',
            'BIT':'bitdao',
