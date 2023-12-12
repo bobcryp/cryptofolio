@@ -49,7 +49,7 @@ elif pair1!='' and pair2!='':
     TP=st.number_input('True Price', value=res,format='%f')
     Q=st.number_input('Quantities',format='%f')
     
-    if pair2.upper() in ['EUR','USDC','USDT','BUSD']:
+    if pair2.upper() in ['EUR','USDC','USDT','BUSD','TUSD','FDUSD']:
         if pair2.upper()=='EUR':
             change=gp.get_price('EUR',data=st.session_state['data_price'])
         else:
@@ -76,7 +76,7 @@ elif pair1!='' and pair2!='':
             dict= {'Date':[full_time],
                 'Type':[tr_type],
                 'Pair1':[pair1.upper()],
-                'Pair2':['BUSD'],
+                'Pair2':['USDT'],
                 'Price':[change],
                 'Quantities':[coeff*Q],
                 'Change_Dollar':[1],
@@ -91,7 +91,7 @@ elif pair1!='' and pair2!='':
             dict= {'Date':[full_time],
                 'Type':[tmp_tr],
                 'Pair1':[pair2.upper()],
-                'Pair2':['BUSD'],
+                'Pair2':['USDT'],
                 'Price':[change2],
                 'Quantities':[tQ],
                 'Change_Dollar':[1],
