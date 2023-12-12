@@ -39,13 +39,24 @@ else:
         res=gp.get_price(pp, value='usd',data=st.session_state['data_price'])
         nb_value=nb_coin*res
         
-        dict={'Coin':[pp],
-            'Amount':[nb_coin],
-            'Cost':[nb_price],
-            'Price':[nb_value]}
+        if pp!='EUR':
+            dict={'Coin':[pp],
+                'Amount':[nb_coin],
+                'Cost':[nb_price],
+                'Price':[nb_value]}
 
-        tmp_c=pd.DataFrame(dict)
-        df_total=pd.concat([df_total,tmp_c])
+            tmp_c=pd.DataFrame(dict)
+            df_total=pd.concat([df_total,tmp_c])
+
+    df_stable=st.session_state['data'].loc[st.session_state['data']['Pair2']=='USDT']
+
+    dict={'Coin':['USDT'],
+                'Amount':[-1*np.sum([df_stable['Balance_Dollar']])],
+                'Cost':[0],
+                'Price':[-1*np.sum([df_stable['Balance_Dollar']])]}
+
+    tmp_c=pd.DataFrame(dict)
+    df_total=pd.concat([df_total,tmp_c])
 
     st.header('Total')
     df_total=df_total.sort_values(by=['Price'],ascending=False)
@@ -74,3 +85,5 @@ else:
     col[0].plotly_chart(fig_invest)
     col[1].subheader('Actual value')
     col[1].plotly_chart(fig_value)
+
+    
