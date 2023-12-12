@@ -43,15 +43,16 @@ else:
             res=gp.get_price(pp, value='usd',data=st.session_state['data_price'])
             nb_value=nb_coin*res
             
-            dict={'Coin':[pp],
-                'Amount':[nb_coin],
-                'Cost':[nb_price],
-                'Price':[nb_value]
-            }
+            if pp!='EUR':
+                dict={'Coin':[pp],
+                    'Amount':[nb_coin],
+                    'Cost':[nb_price],
+                    'Price':[nb_value]}
 
-            tmp_c=pd.DataFrame(dict)
-            tmp_c=tmp_c.round(4)
-            df_total=pd.concat([df_total,tmp_c])
+                tmp_c=pd.DataFrame(dict)
+                tmp_c=tmp_c.round(4)
+                df_total=pd.concat([df_total,tmp_c])
+
     
 
     list_token=sorted(list(set(list(df_total['Coin']))))
