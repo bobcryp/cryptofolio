@@ -11,10 +11,11 @@ st.set_page_config(
 st.title('Welcome to CryptoFolio')
 
 if 'data_price' not in st.session_state:
-    st.session_state['data_price'] = gp.load_price()
+    st.session_state['data_price'] = gp.coingecko_data()
 
 if 'data' not in st.session_state:
-    st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
+    st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar','Type'])
+    st.session_state['change'] = gp.eurusd_change()
 st.write('This web app is meant to follow the state of your crypto currency investment.')
 
 st.header('Data policy')
