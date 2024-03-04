@@ -1,150 +1,35 @@
-from pycoingecko import CoinGeckoAPI
+import subprocess
+import json
+import requests
+from currency_converter import CurrencyConverter
 import datetime
 
-def get_price(sym,date=None,value='usd',data=None):
-    cg = CoinGeckoAPI()
-    hard_find={'XMR':'monero',
-           'CRV':'curve-dao-token',
-           'ORN':'orion-protocol',
-           'UNI':'uniswap',
-           'FLUX':'zelcash',
-           'BIT':'bitdao',
-           'BORG':'swissborg',
-           'DGB':'digibyte',
-           'EUR':'tether-eurt',
-           'SOL':'solana',
-           'ADA':'cardano',
-           'BTC':'bitcoin',
-           'ETH':'ethereum',
-           'SHIB':'shiba-inu',
-           'DOT':'polkadot',
-           'AVAX':'avalanche-2',
-           'NEAR':'near',
-           'DOGE':'dogecoin',
-           'GRT':'the-graph',
-           'FIL':'filecoin',
-           'FTM':'fantom',
-           'CHZ':'chiliz',
-           'ATOM':'cosmos',
-           'HFT':'hashflow',
-           'EGLD':'elrond-erd-2',
-           'CSPR':'casper-network',
-           'LTC':'litecoin',
-           'FTT':'ftx-token',
-           'MANA':'decentraland',      
-           'JASMY':'jasmycoin',
-           'BURGER':'burger-swap',
-           'BNB':'binancecoin',
-           'XRP':'ripple',
-           'MATIC':'matic-network',
-           'TRX':'tron',
-           'UNI':'uniswap',
-           'LINK':'chainlink',
-           'ETC':'ethereum-classic',
-           'ALGO':'algorand',
-           'QNT':'quant-network',
-           'AAVE':'aave',
-           'SAND':'the-sandbox',
-           'CAKE':'pancakeswap-token',
-           'CRO':'crypto-com-chain',
-           'BAT':'basic-attention-token',
-           'ENJ':'enjincoin',
-           'SUCHI':'sushi',
-           'ERN':'ethernity-chain',
-           'ONE':'harmony',
-           'XTZ':'tezos'
-          }
+def coingecko_data(it=1,file_path=None):
+    if file_path is not None:
+        # Open the file in read mode
+        with open(file_path, "r") as file:
+            # Load the JSON data
+            data = json.load(file)
+    else:
+        data=[]
+        for i in range(it):
+            # Define the curl command as a list of arguments
+            curl_command = [
+                'curl',
+                '-X', 'GET',
+                'https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&order=market_cap_desc&per_page=250&page='+str(i)+'&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y&locale=en'
+            ]
+            try:
+                # Execute the curl command
+                result = subprocess.run(curl_command, capture_output=True, text=True, check=True)
 
-    if data is not None:
-        if sym.upper() in hard_find:
-            if value.lower() not in ['btc','eth','usd','eur','busd','usdt','usdc']:
-                return -1
-            if value.lower() in ['busd','usdt','usdc']:
-                value='usd'
-            if date is None:
-                res=data[hard_find[sym]][value.lower()]
-            else:
-                return -1
-        else:
-            return -1
-    else:    
-        if value.lower() not in ['btc','eth','usd','eur','busd','usdt','usdc']:
-            return -1
-        if value in ['busd','usdt','usdc']:
-            value='usd'
+                # Parse JSON response
+                data = data + json.loads(result.stdout)
+            except subprocess.CalledProcessError as e:
+                print("Error executing curl command:", e)
 
-        if sym.upper() in hard_find:
-            id=hard_find[sym]
-        else:
-            ll=cg.search(query=sym)
-            if len(ll['coins'])!=0:
-                id=ll['coins'][0]['id']
-            else:
-                return -1
+    return data
 
-        if date is not None:    
-            data = cg.get_coin_history_by_id(id=id,date=datetime.datetime.fromtimestamp(int(date)).date().strftime('%d-%m-%Y'), localization='false')
-            res=data['market_data']['current_price'][value]
-        else:
-            res=cg.get_price(ids=id, vs_currencies=value.lower())[id][value.lower()]
-            
-    return res
-
-def load_price():
-    cg = CoinGeckoAPI()
-    hard_find={'XMR':'monero',
-           'CRV':'curve-dao-token',
-           'ORN':'orion-protocol',
-           'UNI':'uniswap',
-           'FLUX':'zelcash',
-           'BIT':'bitdao',
-           'BORG':'swissborg',
-           'DGB':'digibyte',
-           'EUR':'tether-eurt',
-           'SOL':'solana',
-           'ADA':'cardano',
-           'BTC':'bitcoin',
-           'ETH':'ethereum',
-           'SHIB':'shiba-inu',
-           'DOT':'polkadot',
-           'AVAX':'avalanche-2',
-           'NEAR':'near',
-           'DOGE':'dogecoin',
-           'GRT':'the-graph',
-           'FIL':'filecoin',
-           'FTM':'fantom',
-           'CHZ':'chiliz',
-           'ATOM':'cosmos',
-           'HFT':'hashflow',
-           'EGLD':'elrond-erd-2',
-           'CSPR':'casper-network',
-           'LTC':'litecoin',
-           'FTT':'ftx-token',
-           'MANA':'decentraland',      
-           'JASMY':'jasmycoin',
-           'BURGER':'burger-swap',
-           'BNB':'binancecoin',
-           'XRP':'ripple',
-           'MATIC':'matic-network',
-           'TRX':'tron',
-           'UNI':'uniswap',
-           'LINK':'chainlink',
-           'ETC':'ethereum-classic',
-           'ALGO':'algorand',
-           'QNT':'quant-network',
-           'AAVE':'aave',
-           'SAND':'the-sandbox',
-           'CAKE':'pancakeswap-token',
-           'CRO':'crypto-com-chain',
-           'BAT':'basic-attention-token',
-           'ENJ':'enjincoin',
-           'SUCHI':'sushi',
-           'ERN':'ethernity-chain',
-           'ONE':'harmony',
-           'XTZ':'tezos'
-          }
-    id_cg=[]
-    for i in list(hard_find):
-        id_cg.append(hard_find[i])
-
-    return cg.get_price(ids=id_cg, vs_currencies=['usd','eur','btc','eth'])
+def eurusd_change():
+    c = CurrencyConverter()
+    return c.convert(1, 'EUR', 'USD')
