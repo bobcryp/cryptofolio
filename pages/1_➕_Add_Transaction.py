@@ -23,6 +23,14 @@ st.title('Add a Transaction')
 st.header('Select Pair')
 tr_type=st.radio('Type',['Buy','Sell'],horizontal=True)
 
+print(st.session_state['data'])
+
+# List of crypto available
+symbol_list = [d['symbol'] for d in st.session_state['data_price']]
+symbol_list_2 = []
+symbol_list_2.append('eur')
+symbol_list_2.append('usdt')
+
 if tr_type=='Buy':
     tr_type2='From'
     coeff=1
@@ -30,8 +38,8 @@ elif tr_type=='Sell':
     tr_type2='To'
     coeff=-1
 
-pair1=st.text_input(tr_type)
-pair2=st.text_input(tr_type2)
+pair1=st.selectbox(tr_type,symbol_list)
+pair2=st.selectbox(tr_type2,symbol_list_2,index=0)
 
 st.header('Transaction date')
 
@@ -40,8 +48,9 @@ t_time=st.time_input('Transaction time')
 
 full_time=datetime.datetime.combine(t_date, t_time)
 
-res=gp.get_price(pair1.upper(), value=pair2,data=st.session_state['data_price'])
-
+res=st.session_state['data_price'][symbol_list.index(pair1)]['current_price']
+if pair2=='eur':
+    res=res/st.session_state['change']
 if res == -1 :
     st.warning('Transaction Pair not available !')
 elif pair1!='' and pair2!='':
