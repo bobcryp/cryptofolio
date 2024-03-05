@@ -58,52 +58,39 @@ elif pair1!='' and pair2!='':
     TP=st.number_input('True Price', value=res,format='%f')
     Q=st.number_input('Quantities',format='%f')
     
-    if pair2.upper() in ['EUR','USDC','USDT','BUSD','TUSD','FDUSD']:
-        if pair2.upper()=='EUR':
-            change=gp.get_price('EUR',data=st.session_state['data_price'])
-        else:
-            change=1
+
+
         
-        if st.button('Add Transaction'):
-            st.success('You '+tr_type.lower()+' '+str(Q)+' '+pair1.upper()+' for '+str(Q*TP)+' '+pair2.upper()+' or '+str(Q*TP*change)+'$ !')
-            dict= {'Date':[full_time],
-                'Type':[tr_type],
-                'Pair1':[pair1.upper()],
-                'Pair2':[pair2.upper()],
-                'Price':[TP],
-                'Quantities':[coeff*Q],
-                'Change_Dollar':[change],
-                'Balance_Dollar':[coeff*TP*Q*change]}
-            
-            ne=pd.DataFrame(dict)
-            st.session_state['data']=pd.concat([st.session_state['data'],ne])
+if st.button('Add Transaction'):
+    
+    if pair2.upper() in ['EUR']:
+        change=st.session_state['change']
     else:
-        if st.button('Add Transaction'):
-            st.success('You '+tr_type.lower()+' '+str(Q)+' '+pair1.upper()+' for '+str(Q*TP)+' '+pair2.upper()+' !')
-                
-            change=gp.get_price(pair1,data=st.session_state['data_price'])
-            dict= {'Date':[full_time],
-                'Type':[tr_type],
-                'Pair1':[pair1.upper()],
-                'Pair2':['USDT'],
-                'Price':[change],
-                'Quantities':[coeff*Q],
-                'Change_Dollar':[1],
-                'Balance_Dollar':[coeff*Q*change]}
-            ne=pd.DataFrame(dict)
-            st.session_state['data']=pd.concat([st.session_state['data'],ne])
-            a=['Buy','Sell']
-            a.remove(tr_type)
-            tmp_tr=a[0]
-            change2=gp.get_price(pair2,data=st.session_state['data_price'])
-            tQ=-1*coeff*Q*change/change2
-            dict= {'Date':[full_time],
-                'Type':[tmp_tr],
-                'Pair1':[pair2.upper()],
-                'Pair2':['USDT'],
-                'Price':[change2],
-                'Quantities':[tQ],
-                'Change_Dollar':[1],
-                'Balance_Dollar':[tQ*change2]}
-            ne=pd.DataFrame(dict)
-            st.session_state['data']=pd.concat([st.session_state['data'],ne])
+        change=1
+
+    dict= {'Date':[full_time],
+        'Type':[tr_type],
+        'Pair1':[pair1.upper()],
+        'Pair2':['USDT'],
+        'Price':[TP*change],
+        'Quantities':[coeff*Q],
+        'Balance_Dollar':[coeff*TP*Q*change]}
+    
+    ne=pd.DataFrame(dict)
+    st.session_state['data']=pd.concat([st.session_state['data'],ne])
+
+    if pair2.upper() in ['EUR']:
+        dict= {'Date':[full_time],
+        'Type':[tr_type],
+        'Pair1':['USDT'],
+        'Pair2':['EUR'],
+        'Price':[change],
+        'Quantities':[coeff*TP*Q*change],
+        'Balance_Dollar':[coeff*TP*Q*change]}
+    
+        ne=pd.DataFrame(dict)
+        st.session_state['data']=pd.concat([st.session_state['data'],ne])
+
+    st.success('You '+tr_type.lower()+' '+str(Q)+' '+pair1.upper()+' for '+str(Q*TP)+' '+pair2.upper()+' or '+str(Q*TP*change)+'$ !')
+
+        

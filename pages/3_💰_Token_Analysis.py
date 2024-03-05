@@ -40,7 +40,7 @@ else:
             nb_price=np.sum(df['Balance_Dollar'])
             
             timestamp=datetime.datetime.today().timestamp()
-            res=gp.get_price(pp, value='usd',data=st.session_state['data_price'])
+            res=gp.get_price(pp,st.session_state['data_price'])
             nb_value=nb_coin*res
             
             if pp!='EUR':
@@ -87,7 +87,7 @@ else:
     df_tmp=pd.DataFrame(dict)
     st.dataframe(df_tmp)
 
-    res_now=gp.get_price(tk, value='usd',data=st.session_state['data_price'])
+    res_now=gp.get_price(tk,data=st.session_state['data_price'])
 
     df_tk=st.session_state['data'].loc[st.session_state['data']['Pair1']==tk]
     

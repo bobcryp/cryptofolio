@@ -1,8 +1,8 @@
 import subprocess
 import json
 import requests
-from currency_converter import CurrencyConverter
 import datetime
+from currency_converter import CurrencyConverter
 
 def coingecko_data(it=1,file_path=None):
     if file_path is not None:
@@ -33,3 +33,7 @@ def coingecko_data(it=1,file_path=None):
 def eurusd_change():
     c = CurrencyConverter()
     return c.convert(1, 'EUR', 'USD')
+
+def get_price(coin_id,data):
+    symbol_list = [d['symbol'] for d in data]
+    return data[symbol_list.index(coin_id.lower())]['current_price']

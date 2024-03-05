@@ -16,7 +16,7 @@ if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Change_Dollar','Balance_Dollar'])
 
 if 'data_price' not in st.session_state:
-    st.session_state['data_price'] = gp.load_price()
+    st.session_state['data_price'] = gp.coingecko_data()
 
 with st.sidebar:
     st.session_state['data'].to_csv('tmp.csv',sep=';',index=False)
@@ -31,15 +31,26 @@ else:
 
     df_total=pd.DataFrame(columns=['Coin','Amount','Cost','Price'])
     
+    balance_usdt=0
+    balance_eur=0
+    
+    for i in range(len(st.session_state['data'])):
+        if (list(st.session_state['data']['Pair1'])[i]=='USDT'):
+            balance_usdt+=list(st.session_state['data']['Balance_Dollar'])[i]
+        if (list(st.session_state['data']['Pair2'])[i]=='EUR'):
+            balance_eur+=-1*list(st.session_state['data']['Balance_Dollar'])[i]/list(st.session_state['data']['Price'])[i]
+        if (list(st.session_state['data']['Pair2'])[i]=='USDT'):
+            balance_usdt+=-1*list(st.session_state['data']['Balance_Dollar'])[i]
+        
     for pp in set(list(st.session_state['data']['Pair1'])):
         tmp_c=[pp,0]
         df=st.session_state['data'].query("Pair1 == @pp")
         nb_coin=np.sum(df['Quantities'])
         nb_price=np.sum(df['Balance_Dollar'])
-        res=gp.get_price(pp, value='usd',data=st.session_state['data_price'])
+        res=gp.get_price(pp,st.session_state['data_price'])
         nb_value=nb_coin*res
         
-        if pp!='EUR':
+        if pp not in ['EUR','USDT']:
             dict={'Coin':[pp],
                 'Amount':[nb_coin],
                 'Cost':[nb_price],
@@ -48,24 +59,22 @@ else:
             tmp_c=pd.DataFrame(dict)
             df_total=pd.concat([df_total,tmp_c])
 
-    df_stable=st.session_state['data'].loc[st.session_state['data']['Pair2']=='USDT']
-
-    dict={'Coin':['USDT'],
-                'Amount':[-1*np.sum([df_stable['Balance_Dollar']])],
-                'Cost':[0],
-                'Price':[-1*np.sum([df_stable['Balance_Dollar']])]}
-
-    tmp_c=pd.DataFrame(dict)
-    df_total=pd.concat([df_total,tmp_c])
-
     st.header('Total')
     df_total=df_total.sort_values(by=['Price'],ascending=False)
     if np.sum(df_total['Cost'])<=0:
         delta_all='G: '+str(-1*round(np.sum(df_total['Cost']),1))+' $'
     else:
-        delta_all=str(round((np.sum(df_total['Price'])/np.sum(df_total['Cost'])-1)*100,1))+' %'
+        delta_all=str(round(((np.sum(df_total['Price']))/np.sum(df_total['Cost'])-1)*100,1))+' %'
     
-    st.metric('All crypto', str(round(np.sum(df_total['Price'])))+' $', delta=delta_all, delta_color="normal", help=None)
+    col = st.columns(3)
+    tmp=col[0]
+    tmp.metric('Crypto', str(round(np.sum(df_total['Price'])))+' $', delta=delta_all, delta_color="normal", help=None)
+    tmp=col[1]
+    tmp.metric('USDT', str(round(balance_usdt))+' $', delta=None, delta_color="normal", help=None)
+    tmp=col[2]
+    tmp.metric('EUR', str(round(balance_eur))+' €', delta=None, delta_color="normal", help=None)
+
+
 
     st.header('Token')
     col = st.columns(5)
