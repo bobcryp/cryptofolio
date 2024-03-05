@@ -11,7 +11,7 @@ st.set_page_config(
 st.title('Welcome to CryptoFolio')
 
 if 'data_price' not in st.session_state:
-    st.session_state['data_price'] = gp.coingecko_data(it=2)
+    st.session_state['data_price'] = gp.coingecko_data(it=1)
 
 if 'data' not in st.session_state:
     st.session_state['data'] = pd.DataFrame(columns=['Date','Type','Pair1','Pair2','Price','Quantities','Balance_Dollar'])
